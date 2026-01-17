@@ -5,8 +5,8 @@ local vero_UI = loadstring(game:HttpGet("https://raw.githubusercontent.com/enzoa
 
 local UI = vero_UI.window({
     Title = "My UI",
-    Width = default is 320,
-    MaxPanelHeight = default is 240,
+    Width = 320, --Default is 320
+    MaxPanelHeight = 240, --Default is 240
     Tabs = {
         "Tab1",
         "Tab2",
