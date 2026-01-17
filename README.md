@@ -1,5 +1,6 @@
 # Vero
 
+````
 local vero_UI = loadstring(game:HttpGet("https://raw.githubusercontent.com/enzoastra30-debug/Debug/refs/heads/main/Vero_UI"))
 
 local UI = vero_UI.window({
@@ -12,3 +13,4 @@ local UI = vero_UI.window({
         "Games"
     }
 })
+````
