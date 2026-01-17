@@ -418,7 +418,7 @@ local function drawUI()
     local w = UI.Size.x
     local h = UI.Size.y
     
-    drawRect(x, y, w, h, cl.Dark, 0.4)
+    --drawRect(x, y, w, h, cl.Dark, 0.4)
     --drawRect(x+1, y+1, w-2, h-2, cl.Outer, 0.3)
     --drawRect(x+2, y+2, w-4, h-4, cl.SecBg, 0.25)
     --drawRect(x+3, y+3, w-6, h-6, cl.Outer, 0.2)
