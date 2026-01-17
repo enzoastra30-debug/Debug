@@ -24,7 +24,7 @@ local cl = {
 local UI = {
     Visible = true,
     Pos = {x = 100, y = 100},
-    Size = {x = 560, y = 350},
+    Size = {x = 560, y = 200},
     CurTab = nil,
     Tabs = {},
     CurDrop = nil,
