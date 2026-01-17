@@ -7,7 +7,7 @@ local ws = workspace
 local cam = ws.CurrentCamera
 
 local cl = {
-    Accent = Color3.fromRGB(255, 200, 69),
+    Accent = Color3.fromRGB(227, 84, 255),
     Text = Color3.fromRGB(255, 255, 255),
     Outline = Color3.fromRGB(5, 5, 5),
     Bg = Color3.fromRGB(15, 15, 15),
@@ -55,10 +55,6 @@ local Inp = {
     RClick = false
 }
 
-
-ShowWM = false
-ShowKB = false
-RainbowWM = true
 RainHue = 0
 LastT = os.clock()
 
