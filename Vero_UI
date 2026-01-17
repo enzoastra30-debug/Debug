@@ -1,7 +1,9 @@
 --//VERO UI LIBRARY\\--
 
 --//SERVICES
+local Players = game:GetService("Players")
 local tween = game:GetService("TweenService")
+local UIS = game:GetService("UserInputService")
 
 --//CONSTRUCTOR VAR
 local Vero_UI = {}
@@ -19,6 +21,11 @@ function Vero_UI.window(config)
     self:_createBar()
     self:_createPanel()
     self:_createTabs()
+
+    --//DEBUG
+    --------------------------------
+    self:_bindDebugDestroy()
+    --------------------------------
 
     return self
 end
@@ -57,7 +64,7 @@ end
 
 --Sliding Panel
 function Vero_UI:_createPanel()
-    local panel = Instance.new("Frame")
+   local panel = Instance.new("Frame")
     panel.Size = UDim2.fromOffset(self.Config.Width or 320, 0)
     panel.Position = UDim2.fromScale(0.5, 0.05)
     panel.AnchorPoint = Vector2.new(0.5, 0)
@@ -65,11 +72,30 @@ function Vero_UI:_createPanel()
     panel.ClipsDescendants = true
     panel.Parent = self.Gui
 
-    local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 8)
-    corner.Parent = panel
+    Instance.new("UICorner", panel).CornerRadius = UDim.new(0, 8)
+
+    -- Scrolling content (for now just one)
+    local scroll = Instance.new("ScrollingFrame")
+    scroll.Size = UDim2.fromScale(1, 1)
+    scroll.CanvasSize = UDim2.fromScale(0, 0)
+    scroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
+    scroll.ScrollBarImageTransparency = 0.5
+    scroll.BackgroundTransparency = 1
+    scroll.Parent = panel
+
+    local padding = Instance.new("UIPadding")
+    padding.PaddingTop = UDim.new(0, 8)
+    padding.PaddingBottom = UDim.new(0, 8)
+    padding.PaddingLeft = UDim.new(0, 8)
+    padding.PaddingRight = UDim.new(0, 8)
+    padding.Parent = scroll
+
+    local layout = Instance.new("UIListLayout")
+    layout.Padding = UDim.new(0, 8)
+    layout.Parent = scroll
 
     self.Panel = panel
+    self.Scroll = scroll
 end
 
 --Tabs 
@@ -96,9 +122,7 @@ end
 --//TAB LOGIC
 
 --Toggle Tab
-function Vero_UI:_toggleTab()
-    local maxHeight = self.Config.MaxPanelHeight or 240
-
+function Vero_UI:_toggleTab(tabName)
     -- Same tab clicked → close
     if self.ActiveTab == tabName and self.PanelOpen then
         self:_setPanel(false)
@@ -121,11 +145,28 @@ function Vero_UI:_setPanel(open)
         )
     }
 
-    TweenService:Create(
+    tween:Create(
         self.Panel,
         TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
         goal
     ):Play()
 end
+
+--------------------------------
+
+--//DEBUG
+function Vero_UI:_bindDebugDestroy()
+    UIS.InputBegan:Connect(function(input, gp)
+        if gp then return end
+
+        if input.KeyCode == Enum.KeyCode.Delete then
+            if self.Gui then
+                self.Gui:Destroy()
+            end
+        end
+    end)
+end
+
+--------------------------------
 
 return Vero_UI
