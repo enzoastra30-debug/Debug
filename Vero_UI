@@ -1,0 +1,51 @@
+--//VERO UI LIBRARY\\--
+
+--//SERVICES
+local tween = game:GetService("TweenService")
+
+--//CONSTRUCTOR VAR
+local Vero_UI = {}
+Vero_UI.__index = Vero_UI
+
+--//CONSTRUCTOR
+function Vero_UI.window(config)
+    local self = setmetatable({}, Vero_UI)
+
+    self.Config = config
+    self.ActiveTab = nil
+    self.PanelOpen = false
+
+
+
+end
+
+--//SUB-CONSTRUCTORS
+
+--Screen Gui
+function Vero_UI:_createGui()
+    local gui = Instance.new("ScreenGui")
+    gui.Name = "CompactUI"
+    gui.ResetOnSpawn = false
+    gui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
+
+    self.Gui = gui
+end
+
+function Vero_UI:_createBar()
+    local bar = Instance.new("Frame")
+    bar.Size = UDim2.fromOffset(self.Config.Width or 320, 38)
+    bar.Position = UDim2.fromScale(0.5, 0.05)
+    bar.AnchorPoint = Vector2.new(0.5, 0)
+    bar.BackgroundColor3 = Color3.fromRGB(24, 24, 24)
+    bar.Parent = self.Gui
+
+    Instance.new("UICorner", bar).CornerRadius = UDim.new(0, 8)
+
+    local layout = Instance.new("UIListLayout")
+    layout.FillDirection = Enum.FillDirection.Horizontal
+    layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    layout.Padding = UDim.new(0, 8)
+    layout.Parent = bar
+
+    self.Bar = bar
+end
