@@ -49,6 +49,7 @@ function Vero_UI:_createBar()
     bar.Position = UDim2.fromScale(0.5, 0.05)
     bar.AnchorPoint = Vector2.new(0.5, 0)
     bar.BackgroundColor3 = Color3.fromRGB(24, 24, 24)
+    bar.ZIndex = 2
     bar.Parent = self.Gui
 
     Instance.new("UICorner", bar).CornerRadius = UDim.new(0, 8)
@@ -56,6 +57,7 @@ function Vero_UI:_createBar()
     local layout = Instance.new("UIListLayout")
     layout.FillDirection = Enum.FillDirection.Horizontal
     layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    layout.VerticalAlignment = Enum.VerticalAlignment.Center
     layout.Padding = UDim.new(0, 8)
     layout.Parent = bar
 
@@ -109,6 +111,7 @@ function Vero_UI:_createTabs()
         btn.TextSize = 13
         btn.TextColor3 = Color3.new(1, 1, 1)
         btn.AutoButtonColor = false
+        btn.ZIndex = 3
         btn.Parent = self.Bar
 
         Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
@@ -158,6 +161,7 @@ end
 function Vero_UI:_bindDebugDestroy()
     UIS.InputBegan:Connect(function(input, gp)
         if gp then return end
+        if not self.Gui then return end
 
         if input.KeyCode == Enum.KeyCode.Delete then
             if self.Gui then
@@ -166,7 +170,5 @@ function Vero_UI:_bindDebugDestroy()
         end
     end)
 end
-
---------------------------------
 
 return Vero_UI
