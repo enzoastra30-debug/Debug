@@ -57,7 +57,7 @@ local Inp = {
 
 
 ShowWM = true
-ShowKB = true
+ShowKB = false
 RainbowWM = true
 RainHue = 0
 LastT = os.clock()
