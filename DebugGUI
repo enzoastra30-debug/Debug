@@ -55,6 +55,9 @@ local Inp = {
     RClick = false
 }
 
+ShowWM = false
+ShowKB = false
+RainbowWM = true
 RainHue = 0
 LastT = os.clock()
 
