@@ -15,8 +15,12 @@ function Vero_UI.window(config)
     self.ActiveTab = nil
     self.PanelOpen = false
 
+    self:_createGui()
+    self:_createBar()
+    self:_createPanel()
+    self:_createTabs()
 
-
+    return self
 end
 
 --//SUB-CONSTRUCTORS
@@ -31,6 +35,7 @@ function Vero_UI:_createGui()
     self.Gui = gui
 end
 
+--The Horizontal Bar
 function Vero_UI:_createBar()
     local bar = Instance.new("Frame")
     bar.Size = UDim2.fromOffset(self.Config.Width or 320, 38)
@@ -49,3 +54,78 @@ function Vero_UI:_createBar()
 
     self.Bar = bar
 end
+
+--Sliding Panel
+function Vero_UI:_createPanel()
+    local panel = Instance.new("Frame")
+    panel.Size = UDim2.fromOffset(self.Config.Width or 320, 0)
+    panel.Position = UDim2.fromScale(0.5, 0.05)
+    panel.AnchorPoint = Vector2.new(0.5, 0)
+    panel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+    panel.ClipsDescendants = true
+    panel.Parent = self.Gui
+
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 8)
+    corner.Parent = panel
+
+    self.Panel = panel
+end
+
+--Tabs 
+function Vero_UI:_createTabs()
+    for _, tabName in ipairs(self.Config.Tabs or {}) do
+        local btn = Instance.new("TextButton")
+        btn.Size = UDim2.fromOffset(80, 28)
+        btn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+        btn.Text = tabName
+        btn.Font = Enum.Font.Gotham
+        btn.TextSize = 13
+        btn.TextColor3 = Color3.new(1, 1, 1)
+        btn.AutoButtonColor = false
+        btn.Parent = self.Bar
+
+        Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
+
+        btn.MouseButton1Click:Connect(function()
+            self:_toggleTab(tabName)
+        end)
+    end
+end
+
+--//TAB LOGIC
+
+--Toggle Tab
+function Vero_UI:_toggleTab()
+    local maxHeight = self.Config.MaxPanelHeight or 240
+
+    -- Same tab clicked → close
+    if self.ActiveTab == tabName and self.PanelOpen then
+        self:_setPanel(false)
+        self.ActiveTab = nil
+        return
+    end
+
+    self.ActiveTab = tabName
+    self:_setPanel(true)
+end
+
+--Set Sliding Panel
+function Vero_UI:_setPanel(open)
+     self.PanelOpen = open
+
+    local goal = {
+        Size = UDim2.fromOffset(
+            self.Panel.Size.X.Offset,
+            open and (self.Config.MaxPanelHeight or 240) or 0
+        )
+    }
+
+    TweenService:Create(
+        self.Panel,
+        TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+        goal
+    ):Play()
+end
+
+return Vero_UI
