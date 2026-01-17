@@ -24,7 +24,7 @@ local cl = {
 local UI = {
     Visible = true,
     Pos = {x = 100, y = 100},
-    Size = {x = 560, y = 740},
+    Size = {x = 560, y = 350},
     CurTab = nil,
     Tabs = {},
     CurDrop = nil,
@@ -364,129 +364,6 @@ local function procBind(kb, flag, down)
         updKeyVis()
     end
     kb.Last = down
-end
-
-local function drawWM()
-    if not ShowWM then return end
-    
-    local now = os.clock()
-    RainHue = (RainHue + (now - LastT) * 0.3) % 1
-    LastT = now
-    
-    local t = "[ " .. UI.Name .. " ]"
-    local sz = txtSize(t)
-    local w = sz.x + 16
-    local h = 18
-    local x = WMPos.x - w / 2
-    local y = WMPos.y
-    
-    if UI.Visible and inBox(x, y, w, h) and Inp.MClick then
-        WMDrag = true
-        local m = getMouse()
-        Inp.DragStart = {x = m.x, y = m.y}
-        WMPos = {x = x + w / 2, y = y + h / 2}
-    end
-    
-    if WMDrag then
-        if Inp.MDown then
-            local m = getMouse()
-            WMPos.x = WMPos.x + (m.x - Inp.DragStart.x)
-            WMPos.y = WMPos.y + (m.y - Inp.DragStart.y)
-            Inp.DragStart = {x = m.x, y = m.y}
-        else
-            WMDrag = false
-        end
-    end
-    
-    drawRect(x, y, w, h, cl.SecBg, 1)
-    drawRect(x + 1, y + 1, w - 2, h - 2, cl.Bg, 1)
-    
-    local pre = "[ "
-    local suf = " ]"
-    local cont = UI.Name
-    
-    drawTxt(x + 8, y + 3, pre, cl.Text, 1, false)
-    
-    if RainbowWM then
-        local cx = x + 8 + txtSize(pre).x
-        local total = #cont
-        
-        for i = 1, total do
-            local ch = cont:sub(i, i)
-            local hue = (i / total + RainHue) % 1
-            local r = math.sin(hue * 2 * math.pi + 0) * 0.5 + 0.5
-            local g = math.sin(hue * 2 * math.pi + 2) * 0.5 + 0.5
-            local b = math.sin(hue * 2 * math.pi + 4) * 0.5 + 0.5
-            local col = Color3.fromRGB(r * 255, g * 255, b * 255)
-            
-            drawTxt(cx, y + 3, ch, col, 1, false)
-            cx = cx + txtSize(ch).x
-        end
-    else
-        local cx = x + 8 + txtSize(pre).x
-        drawTxt(cx, y + 3, cont, cl.Accent, 1, false)
-    end
-    
-    drawTxt(x + w - 8 - txtSize(suf).x, y + 3, suf, cl.Text, 1, false)
-end
-
-local function drawKB()
-    if not ShowKB then return end
-    
-    local vis = {}
-    for flag, w in pairs(KeyWins) do 
-        if w.Visible then 
-            table.insert(vis, {flag = flag, win = w})
-        end 
-    end
-    if #vis == 0 then return end
-    
-    table.sort(vis, function(a,b) return a.win.Name < b.win.Name end)
-    
-    local x = KBPos.x
-    local y = KBPos.y
-    local th = 55 + (#vis * 15) + 8
-    local w = 202
-    
-    if UI.Visible and inBox(x, y, w, 30) and Inp.MClick then
-        KBDrag = true
-        local m = getMouse()
-        Inp.DragStart = {x = m.x, y = m.y}
-        KBPos = {x = x, y = y}
-    end
-    
-    if KBDrag then
-        if Inp.MDown then
-            local m = getMouse()
-            KBPos.x = KBPos.x + (m.x - Inp.DragStart.x)
-            KBPos.y = KBPos.y + (m.y - Inp.DragStart.y)
-            Inp.DragStart = {x = m.x, y = m.y}
-        else
-            KBDrag = false
-        end
-    end
-    
-    drawRect(x, y, w, th, cl.Dark, 0.15)
-    drawRect(x+1, y+1, w-2, th-2, cl.Outer, 0.1)
-    drawRect(x+2, y+2, w-4, th-4, cl.Bg, 0.08)
-    
-    drawTxt(x + w/2, y+15, "keybinds", cl.Text, 1, true)
-    
-    local ly = y + 28
-    drawRect(x+20, ly, w-40, 1, cl.Accent, 0.8)
-    
-    local listy = y + 35
-    local boxh = (#vis * 15) + 8
-    
-    drawRect(x+12, listy, w-24, boxh, cl.SecBg, 1)
-    
-    for i, v in ipairs(vis) do
-        local kb = v.win.Keybind
-        local key = kb.Key or ""
-        local k = KeyMap[key] or key or "NONE"
-        local t = string.format("[ %s ] %s", k, v.win.Name)
-        drawTxt(x+16, listy+4+(i-1)*15, t, cl.Text, 1, false)
-    end
 end
 
 local function drawNotifs()
