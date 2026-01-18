@@ -72,7 +72,7 @@ end
 function Vero_UI:_createPanel()
     local panel = Instance.new("Frame")
     panel.Name = "Panel"
-    panel.Position = UDim2.new(0.5, 0, 0, 75)
+    panel.Position = UDim2.new(0.5, 0, 0, (self.Bar.Position.Y.Offset + 75))
     panel.AnchorPoint = Vector2.new(0.5, 0)
     panel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     panel.ClipsDescendants = true
@@ -258,6 +258,7 @@ end
 
 --//TAB ELEMENTS\\--
 
+--Checkbox
 function tabFunc:checkbox(text, default, callback)
     default = default or false
 
@@ -311,6 +312,236 @@ function tabFunc:checkbox(text, default, callback)
     end
 end
 
+-----------------
+
+--Button
+function tabFunc:button(text, callback)
+    local btnFrame = Instance.new("Frame")
+    btnFrame.Size = UDim2.new(1, -10, 0, 30)
+    btnFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    btnFrame.Parent = self.Scroll
+
+    local uic = Instance.new("UICorner", btnFrame)
+    uic.CornerRadius = UDim.new(0, 6)
+
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, -20, 1, 0)
+    label.Position = UDim2.new(0, 10, 0, 0)
+    label.BackgroundTransparency = 1
+    label.Text = text
+    label.TextColor3 = Color3.fromRGB(255, 255, 255)
+    label.TextSize = 14
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = btnFrame
+
+    local button = Instance.new("TextButton")
+    button.Size = UDim2.new(1, 0, 1, 0)
+    button.BackgroundTransparency = 1
+    button.Text = ""
+    button.Parent = btnFrame
+
+    button.MouseButton1Click:Connect(function()
+        if callback then
+            callback()
+        end
+    end)
+
+    -- Update scrolling frame canvas
+    local layout = self.Scroll:FindFirstChildWhichIsA("UIListLayout")
+    if layout then
+        local totalHeight = 0
+        for _, v in ipairs(self.Scroll:GetChildren()) do
+            if v:IsA("Frame") then
+                totalHeight = totalHeight + v.Size.Y.Offset + layout.Padding.Offset
+            end
+        end
+        self.Scroll.CanvasSize = UDim2.new(0, 0, 0, totalHeight)
+    end
+end
+
+-----------------
+
+--Keybind
+function tabFunc:keybind(text, defaultKey, callback)
+    local key = defaultKey or "None"
+    local listening = false
+
+    -- Create frame
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(1, -10, 0, 30)
+    frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    frame.Parent = self.Scroll
+
+    local uic = Instance.new("UICorner", frame)
+    uic.CornerRadius = UDim.new(0, 6)
+
+    -- Label for keybind name
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(0.6, -10, 1, 0)
+    label.Position = UDim2.new(0, 10, 0, 0)
+    label.BackgroundTransparency = 1
+    label.Text = text
+    label.TextColor3 = Color3.fromRGB(255, 255, 255)
+    label.TextSize = 14
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = frame
+
+    -- Display button for current key
+    local keyBtn = Instance.new("TextButton")
+    keyBtn.Size = UDim2.new(0.35, -10, 0.7, 0)
+    keyBtn.Position = UDim2.new(0.65, 5, 0.15, 0)
+    keyBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    keyBtn.Text = key
+    keyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
+    keyBtn.TextSize = 14
+    keyBtn.Parent = frame
+
+    local uic2 = Instance.new("UICorner", keyBtn)
+    uic2.CornerRadius = UDim.new(0, 4)
+
+    -- Listen for rebinding when button clicked
+    keyBtn.MouseButton1Click:Connect(function()
+        listening = true
+        keyBtn.Text = "Press a key..."
+    end)
+
+    -- Listen for key input to assign
+    local inputConnection
+    inputConnection = game:GetService("UserInputService").InputBegan:Connect(function(input, gp)
+        if gp then return end
+        if listening and input.UserInputType == Enum.UserInputType.Keyboard then
+            if input.KeyCode == Enum.KeyCode.Backspace then
+                key = "None"
+            else
+                key = tostring(input.KeyCode):gsub("Enum.KeyCode.", "")
+            end
+            keyBtn.Text = key
+            listening = false
+        elseif not listening and key ~= "None" then
+            -- Trigger callback if assigned key pressed
+            if input.UserInputType == Enum.UserInputType.Keyboard and tostring(input.KeyCode):gsub("Enum.KeyCode.", "") == key then
+                if callback then
+                    callback()
+                end
+            end
+        end
+    end)
+
+    -- Update scrolling frame canvas
+    local layout = self.Scroll:FindFirstChildWhichIsA("UIListLayout")
+    if layout then
+        local totalHeight = 0
+        for _, v in ipairs(self.Scroll:GetChildren()) do
+            if v:IsA("Frame") then
+                totalHeight = totalHeight + v.Size.Y.Offset + layout.Padding.Offset
+            end
+        end
+        self.Scroll.CanvasSize = UDim2.new(0, 0, 0, totalHeight)
+    end
+end
+
+-----------------
+
+--Slider
+function tabFunc:slider(text, min, max, default, callback)
+    min = min or 0
+    max = max or 100
+    default = default or min
+
+    local value = default
+
+    -- Container frame
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(1, -10, 0, 40)
+    frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    frame.Parent = self.Scroll
+
+    local uic = Instance.new("UICorner", frame)
+    uic.CornerRadius = UDim.new(0, 6)
+
+    -- Label for slider name
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(0.6, -10, 0.5, 0)
+    label.Position = UDim2.new(0, 10, 0, 0)
+    label.BackgroundTransparency = 1
+    label.Text = text
+    label.TextColor3 = Color3.fromRGB(255, 255, 255)
+    label.TextSize = 14
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = frame
+
+    -- Label to display value
+    local valueLabel = Instance.new("TextLabel")
+    valueLabel.Size = UDim2.new(0.35, -10, 0.5, 0)
+    valueLabel.Position = UDim2.new(0.65, 5, 0, 0)
+    valueLabel.BackgroundTransparency = 1
+    valueLabel.Text = tostring(value)
+    valueLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    valueLabel.TextSize = 14
+    valueLabel.TextXAlignment = Enum.TextXAlignment.Right
+    valueLabel.Parent = frame
+
+    -- Slider bar
+    local sliderBar = Instance.new("Frame")
+    sliderBar.Size = UDim2.new(0.95, 0, 0.25, 0)
+    sliderBar.Position = UDim2.new(0.025, 0, 0.65, 0)
+    sliderBar.BackgroundColor3 = Color3.fromRGB(70, 70, 70)
+    sliderBar.Parent = frame
+
+    local sliderUIC = Instance.new("UICorner", sliderBar)
+    sliderUIC.CornerRadius = UDim.new(0, 4)
+
+    -- Slider handle
+    local handle = Instance.new("Frame")
+    handle.Size = UDim2.new(0, 15, 1, 0)
+    handle.Position = UDim2.new((value - min)/(max - min), 0, 0, 0)
+    handle.BackgroundColor3 = Color3.fromRGB(0, 200, 0)
+    handle.Parent = sliderBar
+
+    local handleUIC = Instance.new("UICorner", handle)
+    handleUIC.CornerRadius = UDim.new(0, 4)
+
+    -- Dragging logic
+    local dragging = false
+
+    handle.InputBegan:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = true
+        end
+    end)
+
+    handle.InputEnded:Connect(function(input)
+        if input.UserInputType == Enum.UserInputType.MouseButton1 then
+            dragging = false
+        end
+    end)
+
+    UIS.InputChanged:Connect(function(input)
+        if dragging and input.UserInputType == Enum.UserInputType.MouseMovement then
+            local relativeX = math.clamp(input.Position.X - sliderBar.AbsolutePosition.X, 0, sliderBar.AbsoluteSize.X)
+            local scale = relativeX / sliderBar.AbsoluteSize.X
+            value = math.floor(min + scale * (max - min) + 0.5) -- round to int
+            handle.Position = UDim2.new(scale, 0, 0, 0)
+            valueLabel.Text = tostring(value)
+            if callback then
+                callback(value)
+            end
+        end
+    end)
+
+    -- Update scrolling frame canvas
+    local layout = self.Scroll:FindFirstChildWhichIsA("UIListLayout")
+    if layout then
+        local totalHeight = 0
+        for _, v in ipairs(self.Scroll:GetChildren()) do
+            if v:IsA("Frame") then
+                totalHeight = totalHeight + v.Size.Y.Offset + layout.Padding.Offset
+            end
+        end
+        self.Scroll.CanvasSize = UDim2.new(0, 0, 0, totalHeight)
+    end
+end
+
 ------------------------------------------------
 
 --//DEBUG
@@ -337,6 +568,22 @@ local tab1 = UI:tab("tab1")
 local tab2 = UI:tab("tab2")
 local tab3 = UI:tab("tab3")
 
-tab1:checkbox("Enable feature", true, function(state)
+--//Checkbox test
+tab1:checkbox("Enable feature", false, function(state)
     print("Checkbox is now:", state)
+end)
+
+--//Button Test
+tab1:button("test Button", function()
+    print(("Button Pressed"))
+end)
+
+--//Keybind Test
+tab1:keybind("Test Keybind", "Q", function()
+    print(("keybind pressed"))
+end)
+
+--//Slider Test
+tab1:slider("slider test", 0, 10, 0, function(value)
+    print((value))
 end)
