@@ -45,7 +45,7 @@ end
 --The Horizontal Bar
 function Vero_UI:_createBar()
     local bar = Instance.new("Frame")
-    bar.Size = UDim2.fromOffset(self.Config.Width or 320, 38)
+    bar.Size = UDim2.fromOffset(1, 38)
     bar.Position = UDim2.fromScale(0.5, 0.05)
     bar.AnchorPoint = Vector2.new(0.5, 0)
     bar.BackgroundColor3 = Color3.fromRGB(24, 24, 24)
@@ -67,7 +67,7 @@ end
 --Sliding Panel
 function Vero_UI:_createPanel()
    local panel = Instance.new("Frame")
-    panel.Size = UDim2.fromOffset(self.Config.Width or 320, 0)
+    panel.Size = UDim2.fromOffset(0, 0)
     panel.Position = UDim2.fromScale(0.5, 0.05)
     panel.AnchorPoint = Vector2.new(0.5, 0)
     panel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
@@ -113,6 +113,9 @@ function Vero_UI:_createTabs()
         btn.AutoButtonColor = false
         btn.ZIndex = 3
         btn.Parent = self.Bar
+
+        self.Bar.Size += UDim2.fromOffset(90, 0)
+        self.Panel.Size += UDim2.fromOffset(91, 0)
 
         Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
 
