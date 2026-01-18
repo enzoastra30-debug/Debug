@@ -14,13 +14,13 @@ function Vero_UI.window(config)
     local self = setmetatable({}, Vero_UI)
 
     self.Config = config
+    self.Tabs = {}
     self.ActiveTab = nil
     self.PanelOpen = false
 
     self:_createGui()
     self:_createBar()
     self:_createPanel()
-    self:_createTabs()
 
     --//DEBUG
     --------------------------------
@@ -30,12 +30,14 @@ function Vero_UI.window(config)
     return self
 end
 
+------------------------------------------------
+
 --//SUB-CONSTRUCTORS
 
 --Screen Gui
 function Vero_UI:_createGui()
     local gui = Instance.new("ScreenGui")
-    gui.Name = "CompactUI"
+    gui.Name = "Vero_UI"
     gui.ResetOnSpawn = false
     gui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
 
@@ -45,6 +47,7 @@ end
 --The Horizontal Bar
 function Vero_UI:_createBar()
     local bar = Instance.new("Frame")
+    bar.Name = "Bar"
     bar.Size = UDim2.fromOffset(1, 38)
     bar.Position = UDim2.fromScale(0.5, 0.05)
     bar.AnchorPoint = Vector2.new(0.5, 0)
@@ -67,9 +70,9 @@ end
 
 --Sliding Panel
 function Vero_UI:_createPanel()
-   local panel = Instance.new("Frame")
-    panel.Size = UDim2.fromOffset(0, 0)
-    panel.Position = UDim2.fromScale(0.5, 0.05)
+    local panel = Instance.new("Frame")
+    panel.Name = "Panel"
+    panel.Position = UDim2.new(0.5, 0, 0, 75)
     panel.AnchorPoint = Vector2.new(0.5, 0)
     panel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     panel.ClipsDescendants = true
@@ -77,14 +80,48 @@ function Vero_UI:_createPanel()
 
     Instance.new("UICorner", panel).CornerRadius = UDim.new(0, 8)
 
-    -- Scrolling content (for now just one)
+    self.Panel = panel
+    self.PanelOffsetY = 30
+end
+
+------------------------------------------------
+
+--//TAB SYSTEM\\--
+
+--Tab object class
+local tabFunc = {}
+tabFunc.__index = tabFunc
+
+--Create tab
+function Vero_UI:tab(tabName)
+
+    local btn = Instance.new("TextButton")
+    btn.Name = "Tab Button"
+    btn.Size = UDim2.fromOffset(80, 28)
+    btn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    btn.Text = tabName
+    btn.Font = Enum.Font.Gotham
+    btn.TextSize = 13
+    btn.TextColor3 = Color3.new(1, 1, 1)
+    btn.AutoButtonColor = false
+    btn.ZIndex = 3
+    btn.Parent = self.Bar
+
+    self.Bar.Size += UDim2.fromOffset(90, 0)
+    self.Panel.Size += UDim2.fromOffset(90, 0)
+
+    Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
+
+    --Scrolling frame for the tab Page
     local scroll = Instance.new("ScrollingFrame")
-    scroll.Size = UDim2.fromScale(1, 1)
+    scroll.Name = tabName.. "_Page"
+    scroll.Size = UDim2.new(1, 0, 1, 0)
     scroll.CanvasSize = UDim2.fromScale(0, 0)
     scroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
     scroll.ScrollBarImageTransparency = 0.5
     scroll.BackgroundTransparency = 1
-    scroll.Parent = panel
+    scroll.Visible = false
+    scroll.Parent = self.Panel
 
     local padding = Instance.new("UIPadding")
     padding.PaddingTop = UDim.new(0, 8)
@@ -95,37 +132,27 @@ function Vero_UI:_createPanel()
 
     local layout = Instance.new("UIListLayout")
     layout.Padding = UDim.new(0, 8)
+    layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
     layout.Parent = scroll
 
-    self.Panel = panel
-    self.PanelOffsetY = self.Panel.Position.Y.Offset - self.Bar.Position.Y.Offset
-    self.Scroll = scroll
+   -- store in Tabs table for toggling
+    self.Tabs[tabName] = {
+        Button = btn,
+        Scroll = scroll
+    }
+
+    -- create tab instance
+    local tabInstance = setmetatable({}, tabFunc)
+    tabInstance.Scroll = scroll
+
+    btn.MouseButton1Click:Connect(function()
+        self:_toggleTab(tabName)
+    end)
+
+    return tabInstance
 end
 
---Tabs 
-function Vero_UI:_createTabs()
-    for _, tabName in ipairs(self.Config.Tabs or {}) do
-        local btn = Instance.new("TextButton")
-        btn.Size = UDim2.fromOffset(80, 28)
-        btn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
-        btn.Text = tabName
-        btn.Font = Enum.Font.Gotham
-        btn.TextSize = 13
-        btn.TextColor3 = Color3.new(1, 1, 1)
-        btn.AutoButtonColor = false
-        btn.ZIndex = 3
-        btn.Parent = self.Bar
-
-        self.Bar.Size += UDim2.fromOffset(90, 0)
-        self.Panel.Size += UDim2.fromOffset(90, 0)
-
-        Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
-
-        btn.MouseButton1Click:Connect(function()
-            self:_toggleTab(tabName)
-        end)
-    end
-end
+------------------------------------------------
 
 --//BAR LOGIC\\--
 
@@ -164,55 +191,127 @@ function Vero_UI:_makeDraggable(frame)
             )
             frame.Position = newPos
 
-            -- Only move panel if it exists
             if self.Panel then
-                -- calculate panel offset dynamically
-                local panelOffsetY = self.Panel.Position.Y.Offset - framePos.Y.Offset
+                -- panel follows bar with fixed offset
                 self.Panel.Position = UDim2.new(
                     newPos.X.Scale,
                     newPos.X.Offset,
                     newPos.Y.Scale,
-                    newPos.Y.Offset + (self.PanelOffsetY or 1)
+                    newPos.Y.Offset + self.PanelOffsetY
                 )
             end
         end
     end)
 end
 
+------------------------------------------------
+
 --//TAB LOGIC\\--
 
 --Toggle Tab
 function Vero_UI:_toggleTab(tabName)
-    -- Same tab clicked → close
+  -- Close previously active tab scroll (clicked new tab without closing)
+    if self.ActiveTab and self.Tabs[self.ActiveTab] then
+        self.Tabs[self.ActiveTab].Scroll.Visible = false
+    end
+
+    -- Same tab clicked → close panel 
     if self.ActiveTab == tabName and self.PanelOpen then
         self:_setPanel(false)
         self.ActiveTab = nil
         return
     end
 
+    -- Set new active tab
     self.ActiveTab = tabName
     self:_setPanel(true)
+    if self.Tabs[tabName] then
+        self.Tabs[tabName].Scroll.Visible = true
+    end
 end
 
 --Set Sliding Panel
 function Vero_UI:_setPanel(open)
-     self.PanelOpen = open
+    self.PanelOpen = open
 
     local goal = {
         Size = UDim2.fromOffset(
             self.Panel.Size.X.Offset,
             open and (self.Config.MaxPanelHeight or 240) or 0
-        )
+        ),
     }
 
-    tween:Create(
+    local tweenGoal = tween:Create(
         self.Panel,
         TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
         goal
-    ):Play()
+    )
+    tweenGoal:Play()
+    tweenGoal.Completed:Connect(function()
+        if onComplete then
+            onComplete()
+        end
+    end)
 end
 
---------------------------------
+------------------------------------------------
+
+--//TAB ELEMENTS\\--
+
+function tabFunc:checkbox(text, default, callback)
+    default = default or false
+
+    local boxFrame = Instance.new("Frame")
+    boxFrame.Size = UDim2.new(1, -10, 0, 30)
+    boxFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    boxFrame.Parent = self.Scroll
+
+    local uic = Instance.new("UICorner", boxFrame)
+    uic.CornerRadius = UDim.new(0, 6)
+
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, -30, 1, 0)
+    label.Position = UDim2.new(0, 10, 0, 0)
+    label.BackgroundTransparency = 1
+    label.Text = text
+    label.TextColor3 = Color3.fromRGB(255, 255, 255)
+    label.TextSize = 14
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.Parent = boxFrame
+
+    local button = Instance.new("TextButton")
+    button.Size = UDim2.new(0, 20, 0, 20)
+    button.Position = UDim2.new(1, -25, 0.5, -10)
+    button.BackgroundColor3 = default and Color3.fromRGB(0, 200, 0) or Color3.fromRGB(60, 60, 60)
+    button.Text = ""
+    button.Parent = boxFrame
+
+    local uic2 = Instance.new("UICorner", button)
+    uic2.CornerRadius = UDim.new(0, 4)
+
+    local toggled = default
+    button.MouseButton1Click:Connect(function()
+        toggled = not toggled
+        button.BackgroundColor3 = toggled and Color3.fromRGB(0, 200, 0) or Color3.fromRGB(60, 60, 60)
+        if callback then
+            callback(toggled)
+        end
+    end)
+
+    -- Update scrolling frame canvas
+    local layout = self.Scroll:FindFirstChildWhichIsA("UIListLayout")
+    if layout then
+        local totalHeight = 0
+        for _, v in ipairs(self.Scroll:GetChildren()) do
+            if v:IsA("Frame") then
+                totalHeight = totalHeight + v.Size.Y.Offset + layout.Padding.Offset
+            end
+        end
+        self.Scroll.CanvasSize = UDim2.new(0, 0, 0, totalHeight)
+    end
+end
+
+------------------------------------------------
 
 --//DEBUG
 function Vero_UI:_bindDebugDestroy()
@@ -228,4 +327,16 @@ function Vero_UI:_bindDebugDestroy()
     end)
 end
 
-return Vero_UI
+------------------------------------------------
+
+local UI = Vero_UI.window({
+    Title = "My UI",
+})
+
+local tab1 = UI:tab("tab1")
+local tab2 = UI:tab("tab2")
+local tab3 = UI:tab("tab3")
+
+tab1:checkbox("Enable feature", true, function(state)
+    print("Checkbox is now:", state)
+end)
