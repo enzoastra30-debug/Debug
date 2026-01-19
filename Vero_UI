@@ -611,6 +611,7 @@ function tabFunc:dropdown(text, options, default, callback)
         opt.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
         opt.Text = option
         opt.TextSize = 13
+        opt.ZIndex = 5
         opt.Parent = listFrame
 
         Instance.new("UICorner", opt).CornerRadius = UDim.new(0, 4)
