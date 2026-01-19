@@ -1,7 +1,7 @@
 # Vero
 
 ````
-local Vero_UI = loadstring(game:HttpGet("https://raw.githubusercontent.com/enzoastra30-debug/Debug/refs/heads/main/Vero_UI"))
+local Vero_UI = loadstring(game:HttpGet("https://raw.githubusercontent.com/enzoastra30-debug/Debug/refs/heads/main/Vero_UI"))()
 
 local UI = Vero_UI.window({
     Title = "My UI",
