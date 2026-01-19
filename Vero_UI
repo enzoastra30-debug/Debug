@@ -19,13 +19,15 @@ function Vero_UI.window(config)
     self.PanelOpen = false
 
     self:_createGui()
-    self:_createBar()
-    self:_createPanel()
 
     --//DEBUG
     --------------------------------
     self:_bindDebugDestroy()
     --------------------------------
+
+    self:_createBar()
+    self:_createPanel()
+    self:_playIntro()
 
     return self
 end
@@ -82,6 +84,53 @@ function Vero_UI:_createPanel()
 
     self.Panel = panel
     self.PanelOffsetY = 30
+end
+
+--Intro for UI library
+function Vero_UI:_playIntro()
+    local bar = self.Bar
+
+    --Left Arrow
+    local arrowLeft = Instance.new("ImageLabel")
+    arrowLeft.Name = "ArrowLeft"
+    arrowLeft.Size = UDim2.new(0, 65, 0, 45)
+    arrowLeft.Position = UDim2.new(.483,0,.3,0)
+    arrowLeft.Image = "rbxassetid://16848361091"
+    arrowLeft.Rotation = 90
+    arrowLeft.BackgroundTransparency = 1
+    arrowLeft.ImageColor3 = Color3.fromRGB(45, 45, 45)
+    arrowLeft.BorderSizePixel = 0
+    arrowLeft.Parent = self.Gui
+
+    --Right Arrow
+    local arrowRight = Instance.new("ImageLabel")
+    arrowRight.Name = "ArrowRight"
+    arrowRight.Size = UDim2.new(0, 65, 0, 45)
+    arrowRight.Position = UDim2.new(.483,0,.3,0)
+    arrowRight.Image = "rbxassetid://16848361091"
+    arrowRight.Rotation = -90
+    arrowRight.BackgroundTransparency = 1
+    arrowRight.ImageColor3 = Color3.fromRGB(45, 45, 45)
+    arrowRight.BorderSizePixel = 0
+    arrowRight.Parent = self.Gui
+
+    --Title
+    local title = Instance.new("TextLabel")
+    title.Name = "Title"
+    title.Position = UDim2.new(.446, 0, .287, 0)
+    title.Size = UDim2.new(0, 82, 0, 67)
+    title.BackgroundTransparency = 1
+    title.BorderSizePixel = 0
+    title.Text = "VER"
+    title.TextScaled = true
+    title.TextColor3 = Color3.fromRGB(243, 243, 243)
+    title.FontFace = Font.new("", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
+    title.Parent = self.Gui
+
+    --UI Stroke
+    local Stroke = Instance.new("UIStroke")
+    Stroke.Transparency = .5
+    Stroke.Parent = title
 end
 
 ------------------------------------------------
