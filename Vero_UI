@@ -276,7 +276,7 @@ function tabFunc:checkbox(text, default, callback)
     label.BackgroundTransparency = 1
     label.Text = text
     label.TextColor3 = Color3.fromRGB(255, 255, 255)
-    label.TextSize = 14
+    label.TextSize = 10
     label.TextXAlignment = Enum.TextXAlignment.Left
     label.Parent = boxFrame
 
@@ -330,7 +330,7 @@ function tabFunc:button(text, callback)
     label.BackgroundTransparency = 1
     label.Text = text
     label.TextColor3 = Color3.fromRGB(255, 255, 255)
-    label.TextSize = 14
+    label.TextSize = 10
     label.TextXAlignment = Enum.TextXAlignment.Left
     label.Parent = btnFrame
 
@@ -382,7 +382,7 @@ function tabFunc:keybind(text, defaultKey, callback)
     label.BackgroundTransparency = 1
     label.Text = text
     label.TextColor3 = Color3.fromRGB(255, 255, 255)
-    label.TextSize = 14
+    label.TextSize = 10
     label.TextXAlignment = Enum.TextXAlignment.Left
     label.Parent = frame
 
@@ -393,7 +393,7 @@ function tabFunc:keybind(text, defaultKey, callback)
     keyBtn.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
     keyBtn.Text = key
     keyBtn.TextColor3 = Color3.fromRGB(255, 255, 255)
-    keyBtn.TextSize = 14
+    keyBtn.TextSize = 10
     keyBtn.Parent = frame
 
     local uic2 = Instance.new("UICorner", keyBtn)
@@ -466,7 +466,7 @@ function tabFunc:slider(text, min, max, default, callback)
     label.BackgroundTransparency = 1
     label.Text = text
     label.TextColor3 = Color3.fromRGB(255, 255, 255)
-    label.TextSize = 14
+    label.TextSize = 10
     label.TextXAlignment = Enum.TextXAlignment.Left
     label.Parent = frame
 
@@ -542,6 +542,169 @@ function tabFunc:slider(text, min, max, default, callback)
     end
 end
 
+-----------------
+
+--Dropdown
+function tabFunc:dropdown(text, options, default, callback)
+    options = options or {}
+    default = default or options[1] or ""
+
+    local container = Instance.new("Frame")
+    container.Size = UDim2.new(1, -10, 0, 30)
+    container.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+    container.Name = "Container"
+    container.Parent = self.Scroll
+
+    Instance.new("UICorner", container).CornerRadius = UDim.new(0, 6)
+
+    local title = Instance.new("TextLabel")
+    title.Size = UDim2.new(1, -90, 1, 0)
+    title.Position = UDim2.new(0, 10, 0, 0)
+    title.BackgroundTransparency = 1
+    title.Text = text
+    title.TextColor3 = Color3.fromRGB(255, 255, 255)
+    title.TextXAlignment = Enum.TextXAlignment.Left
+    title.TextSize = 10
+    title.Name = "Title"
+    title.Parent = container
+
+    local valueButton = Instance.new("TextButton")
+    valueButton.Size = UDim2.new(0, 70, 0, 20)
+    valueButton.Position = UDim2.new(1, -80, 0.5, -10)
+    valueButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    valueButton.Text = default
+    valueButton.TextSize = 13
+    valueButton.Name = "ValueButton"
+    valueButton.Parent = container
+
+    Instance.new("UICorner", valueButton).CornerRadius = UDim.new(0, 4)
+
+    local listFrame = Instance.new("Frame")
+    listFrame.Position = UDim2.new(1, -80, 0.5, -10)
+    listFrame.Size = UDim2.new(0, 70, 0, 20)
+    listFrame.BackgroundTransparency = 1
+    listFrame.Visible = false
+    listFrame.Name = "ListFrame"
+    listFrame.Parent = container
+
+    local layout = Instance.new("UIListLayout")
+    layout.Padding = UDim.new(0, 4)
+    layout.Parent = listFrame
+
+    local open = false
+    local selected = default
+
+    local function recalcCanvas()
+        task.wait()
+        local total = 0
+        for _, v in ipairs(self.Scroll:GetChildren()) do
+            if v:IsA("Frame") then
+                total += v.Size.Y.Offset + 8
+            end
+        end
+        self.Scroll.CanvasSize = UDim2.new(0, 0, 0, total)
+    end
+
+    for _, option in ipairs(options) do
+        local opt = Instance.new("TextButton")
+        opt.Size = UDim2.new(1, 0, 0, 22)
+        opt.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
+        opt.Text = option
+        opt.TextSize = 13
+        opt.Parent = listFrame
+
+        Instance.new("UICorner", opt).CornerRadius = UDim.new(0, 4)
+
+        opt.MouseButton1Click:Connect(function()
+            selected = option
+            valueButton.Text = option
+            open = false
+
+            listFrame.Visible = false
+            container.Size = UDim2.new(1, -10, 0, 30)
+            listFrame.Size = UDim2.new(1, -10, 0, 0)
+
+            if callback then
+                callback(option)
+            end
+
+            recalcCanvas()
+        end)
+    end
+
+    valueButton.MouseButton1Click:Connect(function()
+        open = not open
+
+        listFrame.Visible = open
+        listFrame.Size = UDim2.new(0, 70, 0, open and (#options * 26) or 0)
+        recalcCanvas()
+    end)
+
+    recalcCanvas()
+end
+
+-----------------
+
+--// GameBox
+function tabFunc:gamebox(imageId, title, callback)
+    local box = Instance.new("Frame")
+    box.Size = UDim2.new(1, -10, 0, 120)
+    box.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    box.ClipsDescendants = true
+    box.Parent = self.Scroll
+
+    Instance.new("UICorner", box).CornerRadius = UDim.new(0, 8)
+
+    -- Image
+    local image = Instance.new("ImageLabel")
+    image.Size = UDim2.new(1, 0, 1, 0)
+    image.BackgroundTransparency = 1
+    image.Image = "rbxassetid://".. imageId
+    image.ScaleType = Enum.ScaleType.Fit
+    image.Parent = box
+
+    -- Bottom overlay
+    local overlay = Instance.new("Frame")
+    overlay.Size = UDim2.new(1, 0, 0, 34)
+    overlay.Position = UDim2.new(0, 0, 1, -34)
+    overlay.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    overlay.BackgroundTransparency = 0.35
+    overlay.Parent = box
+
+    -- Clickable title button
+    local button = Instance.new("TextButton")
+    button.Size = UDim2.new(1, -16, 1, 0)
+    button.Position = UDim2.new(0, 8, 0, 0)
+    button.BackgroundTransparency = 1
+    button.Text = title
+    button.Font = Enum.Font.Gotham
+    button.TextSize = 13
+    button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    button.TextWrapped = true
+    button.TextTruncate = Enum.TextTruncate.AtEnd
+    button.TextXAlignment = Enum.TextXAlignment.Left
+    button.AutoButtonColor = false
+    button.Parent = overlay
+
+    button.MouseButton1Click:Connect(function()
+        if callback then
+            callback()
+        end
+    end)
+
+    -- Canvas resize
+    local layout = self.Scroll:FindFirstChildWhichIsA("UIListLayout")
+    if layout then
+        local totalHeight = 0
+        for _, v in ipairs(self.Scroll:GetChildren()) do
+            if v:IsA("Frame") then
+                totalHeight += v.Size.Y.Offset + layout.Padding.Offset
+            end
+        end
+        self.Scroll.CanvasSize = UDim2.new(0, 0, 0, totalHeight)
+    end
+end
+
 ------------------------------------------------
 
 --//DEBUG
@@ -558,32 +721,4 @@ function Vero_UI:_bindDebugDestroy()
     end)
 end
 
-------------------------------------------------
-
-local UI = Vero_UI.window({
-    Title = "My UI",
-})
-
-local tab1 = UI:tab("tab1")
-local tab2 = UI:tab("tab2")
-local tab3 = UI:tab("tab3")
-
---//Checkbox test
-tab1:checkbox("Enable feature", false, function(state)
-    print("Checkbox is now:", state)
-end)
-
---//Button Test
-tab1:button("test Button", function()
-    print(("Button Pressed"))
-end)
-
---//Keybind Test
-tab1:keybind("Test Keybind", "Q", function()
-    print(("keybind pressed"))
-end)
-
---//Slider Test
-tab1:slider("slider test", 0, 10, 0, function(value)
-    print((value))
-end)
+return Vero_UI
