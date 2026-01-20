@@ -2,7 +2,6 @@
 
 --[[
     TODO:
-    -Name each elements frame inside its constructor (so that it shows inside the page instead of "Frame")
     -Add hover effects for all the buttons (toggles, buttons, tabs, etc)
     -Fix Element layout (should be based on when added in script)
 ]]
