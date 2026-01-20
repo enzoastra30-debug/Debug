@@ -2,3 +2,6 @@
 
 --//Brick Control
 loadstring(game:HttpGet("https://raw.githubusercontent.com/hm5650/Brick/refs/heads/main/Brick.lua"))()
+
+--//Dark Dex
+loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-NDex-V1-Dark-Dex-76941"))()
