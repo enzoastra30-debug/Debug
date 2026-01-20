@@ -2,7 +2,6 @@
 
 --[[
     TODO:
-    -Fix dropdown text color + dropdown textscale
     -Fix keybind not disconnecting when removing gui (repeated keybind presses even after destroyed)
     -Name each elements frame inside its constructor (so that it shows inside the page instead of "Frame")
     -Add hover effects for all the buttons (toggles, buttons, tabs, etc)
@@ -700,8 +699,9 @@ function tabFunc:dropdown(text, options, default, callback)
     valueButton.Size = UDim2.new(0, 70, 0, 20)
     valueButton.Position = UDim2.new(1, -80, 0.5, -10)
     valueButton.BackgroundColor3 = Color3.fromRGB(60, 60, 60)
+    valueButton.TextColor3 = Color3.fromRGB(200,200,200)
     valueButton.Text = default
-    valueButton.TextSize = 13
+    valueButton.TextScaled = true
     valueButton.Name = "ValueButton"
     valueButton.Parent = container
 
@@ -736,9 +736,10 @@ function tabFunc:dropdown(text, options, default, callback)
     for _, option in ipairs(options) do
         local opt = Instance.new("TextButton")
         opt.Size = UDim2.new(1, 0, 0, 22)
-        opt.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
+        opt.BackgroundColor3 = Color3.fromRGB(55,55,55)
+        opt.TextColor3 = Color3.fromRGB(200,200,200)
         opt.Text = option
-        opt.TextSize = 13
+        opt.TextScaled = true
         opt.ZIndex = 5
         opt.Parent = listFrame
 
