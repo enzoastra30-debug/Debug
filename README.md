@@ -40,4 +40,11 @@ end)
 tab1:gamebox("14875978126", "Total Roblox Drama", function()
     print(("Load Game"))
 end)
+
+--//Sectionbox Test
+local section = tab3:section("test", 90)
+local testFrame = Instance.new("TextButton")
+testFrame.Size = UDim2.new(1, 0, 0, 30)
+testFrame.Text = "Speed Boost"
+testFrame.Parent = section.Content
 ````
