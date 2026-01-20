@@ -776,7 +776,7 @@ end
 -----------------
 
 --// GameBox
-function tabFunc:gamebox(imageId, title, callback)
+function tabFunc:gamebox(imageId, title)
     local box = Instance.new("Frame")
     box.Size = UDim2.new(1, -10, 0, 120)
     box.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
@@ -816,9 +816,57 @@ function tabFunc:gamebox(imageId, title, callback)
     button.AutoButtonColor = false
     button.Parent = overlay
 
+    --Avaliable game pages
+    local gamePageFold = Instance.new("Folder")
+    gamePageFold.Name = "GamePages"
+    gamePageFold.Parent = self.Scroll.Parent
+
+    --GamePage
+    local page = Instance.new("ScrollingFrame")
+    page.Size = UDim2.fromScale(1, 1)
+    page.BackgroundTransparency = 1
+    page.Visible = false
+    page.Name = title
+    page.Parent = gamePageFold -- main panel container
+
+    local layout = Instance.new("UIListLayout")
+    layout.Padding = UDim.new(0, 8)
+    layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    layout.Parent = page
+
+    -- Header
+    local header = Instance.new("Frame")
+    header.Size = UDim2.new(1, 0, 0, 40)
+    header.BackgroundTransparency = 1
+    header.Parent = page
+
+    -- Back button
+    local back = Instance.new("TextButton")
+    back.Size = UDim2.fromOffset(40, 40)
+    back.BackgroundTransparency = 1
+    back.Text = "←"
+    back.Font = Enum.Font.GothamBold
+    back.TextSize = 20
+    back.TextColor3 = Color3.fromRGB(255, 255, 255)
+    back.Parent = header
+
     button.MouseButton1Click:Connect(function()
-        if callback then
-            callback()
+        for _, element in pairs(self.Scroll:GetChildren()) do
+            if element:IsA("Frame") then
+                element.Visible = false
+            end
+        end
+        page.Parent = self.Scroll
+        page.Visible = true
+    end)
+
+    back.MouseButton1Click:Connect(function()
+        page.Visible = false
+        page.Parent = gamePageFold
+        for _, element in pairs(self.Scroll:GetChildren()) do
+            if element:IsA("Frame") then
+                element.Visible = true
+            end
         end
     end)
 
@@ -833,6 +881,8 @@ function tabFunc:gamebox(imageId, title, callback)
         end
         self.Scroll.CanvasSize = UDim2.new(0, 0, 0, totalHeight)
     end
+
+    return page
 end
 
 -----------------
