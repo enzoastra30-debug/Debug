@@ -1,5 +1,15 @@
 --//VERO UI LIBRARY\\--
 
+--[[
+    TODO:
+    -Make scrollbar size thinner (to chuncky right now)
+    -Add a notification Element
+    -Add a search bar Element
+    -Add on to gamebox element (when clicked opens a blank page, by overlaying the panel, with a back button to go back)
+    -Fix dropdown text color
+    -Fix keybind not disconnecting when removing gui (repeated keybind presses even after destroyed)
+]]
+
 --//SERVICES
 local Players = game:GetService("Players")
 local tween = game:GetService("TweenService")
