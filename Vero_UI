@@ -2,8 +2,6 @@
 
 --[[
     TODO:
-    -Make scrollbar size thinner (to chuncky right now)
-    -Add a notification Element
     -Add a search bar Element
     -Add a pop-up Element for confirmation (or to be used when needing to give info before a script is executed)
     -Add on to gamebox element (when clicked opens a blank page, by overlaying the panel, with a back button to go back)
@@ -38,6 +36,7 @@ function Vero_UI.window(config)
 
     self:_createBar()
     self:_createPanel()
+    self:_createNotifications()
     self:_playIntro()
 
     return self
@@ -114,6 +113,26 @@ function Vero_UI:_createPanel()
 
     self.Panel = panel
     self.PanelOffsetY = 30
+end
+
+--Notification panel
+function Vero_UI:_createNotifications()
+    local container = Instance.new("Frame")
+    container.Name = "Notifications"
+    container.Size = UDim2.new(0, 300, 1, -40)
+    container.Position = UDim2.new(1, -20, 0, 20)
+    container.AnchorPoint = Vector2.new(1, 0)
+    container.BackgroundTransparency = 1
+    container.ZIndex = 50
+    container.Parent = self.Gui
+
+    local layout = Instance.new("UIListLayout")
+    layout.Padding = UDim.new(0, 8)
+    layout.HorizontalAlignment = Enum.HorizontalAlignment.Right
+    layout.VerticalAlignment = Enum.VerticalAlignment.Top
+    layout.Parent = container
+
+    self.Notifications = container
 end
 
 --Intro for UI library
@@ -238,6 +257,7 @@ function Vero_UI:tab(tabName)
     scroll.AutomaticCanvasSize = Enum.AutomaticSize.Y
     scroll.ScrollBarImageTransparency = 0.5
     scroll.BackgroundTransparency = 1
+    scroll.ScrollBarThickness = 8
     scroll.Visible = false
     scroll.Parent = self.Panel
 
@@ -870,6 +890,77 @@ function tabFunc:section(title, height)
     }
 end
 
+-----------------
+
+--//Notification
+function Vero_UI:notify(text, nType, duration)
+    nType = nType or "info"
+    duration = duration or 3
+
+    local colors = {
+        info = Color3.fromRGB(60, 130, 255),
+        success = Color3.fromRGB(80, 200, 120),
+        warning = Color3.fromRGB(255, 170, 60),
+        error = Color3.fromRGB(255, 80, 80)
+    }
+
+    local frame = Instance.new("Frame")
+    frame.Size = UDim2.new(1, 0, 0, 60)
+    frame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    frame.BackgroundTransparency = 0
+    frame.Position = UDim2.new(1, 40, 0, 0) -- start off-screen
+    frame.ZIndex = 51
+    frame.Parent = self.Notifications
+
+    Instance.new("UICorner", frame).CornerRadius = UDim.new(0, 8)
+
+    -- Accent bar
+    local accent = Instance.new("Frame")
+    accent.Size = UDim2.new(0, 4, 1, 0)
+    accent.BackgroundColor3 = colors[nType] or colors.info
+    accent.ZIndex = 52
+    accent.Parent = frame
+
+    Instance.new("UICorner", accent).CornerRadius = UDim.new(0, 8)
+
+    -- Text
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, -20, 1, -12)
+    label.Position = UDim2.new(0, 12, 0, 6)
+    label.BackgroundTransparency = 1
+    label.TextWrapped = true
+    label.TextXAlignment = Enum.TextXAlignment.Left
+    label.TextYAlignment = Enum.TextYAlignment.Center
+    label.Text = text
+    label.ZIndex = 52
+    label.TextScaled = true
+    label.TextColor3 = Color3.fromRGB(235, 235, 235)
+    label.Font = Enum.Font.Gotham
+    label.Parent = frame
+
+    -- Slide in
+    tween:Create(
+        frame,
+        TweenInfo.new(0.35, Enum.EasingStyle.Quart, Enum.EasingDirection.Out),
+        {Position = UDim2.new(0, 0, 0, 0)}
+    ):Play()
+
+    -- Auto remove
+    task.delay(duration, function()
+        if frame and frame.Parent then
+            tween:Create(
+                frame,
+                TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.In),
+                {Position = UDim2.new(1, 40, 0, 0), BackgroundTransparency = 1}
+            ):Play()
+
+            task.wait(0.3)
+            frame:Destroy()
+        end
+    end)
+end
+
+
 ------------------------------------------------
 
 --//DEBUG
@@ -885,5 +976,7 @@ function Vero_UI:_bindDebugDestroy()
         end
     end)
 end
+
+------------------------------------------------
 
 return Vero_UI
