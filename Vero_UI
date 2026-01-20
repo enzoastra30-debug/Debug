@@ -391,7 +391,7 @@ function tabFunc:checkbox(text, default, callback)
 
     local boxFrame = Instance.new("Frame")
     boxFrame.Size = UDim2.new(1, -10, 0, 30)
-    boxFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)\
+    boxFrame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
     boxFrame.Name = "Toggle"
     boxFrame.Parent = self.Scroll
 
