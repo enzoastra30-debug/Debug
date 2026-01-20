@@ -26,7 +26,7 @@ function Vero_UI.window(config)
     --------------------------------
 
     self:_createBar()
-    --self:_createPanel()
+    self:_createPanel()
     self:_playIntro()
 
     return self
@@ -47,7 +47,7 @@ function Vero_UI:_createGui()
     mainHold.Size = UDim2.fromScale(.1,.06)
     mainHold.AnchorPoint = Vector2.new(0.5, 0.5)
     mainHold.Position = UDim2.fromScale(0.5, 0.3)
-    mainHold.BackgroundTransparency = .9
+    mainHold.BackgroundTransparency = 1
     mainHold.Parent = gui
 
     self.Gui = gui
@@ -62,7 +62,7 @@ function Vero_UI:_createBar()
     bar.AnchorPoint = Vector2.new(0.5, 0.5)
     bar.Size = UDim2.fromOffset(17, 38)
     bar.Position = UDim2.fromScale(.5,.5)
-    bar.BackgroundColor3 = Color3.fromRGB(65,65,65)
+    bar.BackgroundColor3 = Color3.fromRGB(55,55,55)
     bar.BackgroundTransparency = 1
     bar.ZIndex = 2
     bar.Parent = self.Holder
@@ -93,7 +93,7 @@ end
 function Vero_UI:_createPanel()
     local panel = Instance.new("Frame")
     panel.Name = "Panel"
-    panel.Position = UDim2.new(0.5, 0, 0, (self.Bar.Position.Y.Offset + 75))
+    panel.Position = UDim2.new(0.5, 0, 0, (self.Bar.Position.Y.Offset + 45))
     panel.AnchorPoint = Vector2.new(0.5, 0)
     panel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     panel.ClipsDescendants = true
@@ -204,9 +204,9 @@ function Vero_UI:tab(tabName)
     local btn = Instance.new("TextButton")
     btn.Name = "Tab Button"
     btn.Size = UDim2.fromOffset(80, 28)
-    btn.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+    btn.BackgroundColor3 = Color3.fromRGB(40,40,40)
     btn.Text = tabName
-    btn.Font = Enum.Font.Gotham
+    btn.FontFace = Font.new("", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
     btn.TextSize = 13
     btn.TextColor3 = Color3.new(1, 1, 1)
     btn.AutoButtonColor = false
@@ -215,7 +215,7 @@ function Vero_UI:tab(tabName)
     btn.TextTransparency = 1
     btn.Parent = self.BarContent
 
-    --self.Panel.Size += UDim2.fromOffset(90, 0)
+    self.Panel.Size += UDim2.fromOffset(87, 0)
 
     Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
 
