@@ -26,7 +26,7 @@ function Vero_UI.window(config)
     --------------------------------
 
     self:_createBar()
-    self:_createPanel()
+    --self:_createPanel()
     self:_playIntro()
 
     return self
@@ -43,31 +43,50 @@ function Vero_UI:_createGui()
     gui.ResetOnSpawn = false
     gui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
 
+    local mainHold = Instance.new("Frame")
+    mainHold.Size = UDim2.fromScale(.1,.06)
+    mainHold.AnchorPoint = Vector2.new(0.5, 0.5)
+    mainHold.Position = UDim2.fromScale(0.5, 0.3)
+    mainHold.BackgroundTransparency = .9
+    mainHold.Parent = gui
+
     self.Gui = gui
+    self.Holder = mainHold
+    self:_makeDraggable(self.Holder)
 end
 
 --The Horizontal Bar
 function Vero_UI:_createBar()
     local bar = Instance.new("Frame")
     bar.Name = "Bar"
-    bar.Size = UDim2.fromOffset(1, 38)
-    bar.Position = UDim2.fromScale(0.5, 0.05)
-    bar.AnchorPoint = Vector2.new(0.5, 0)
-    bar.BackgroundColor3 = Color3.fromRGB(24, 24, 24)
+    bar.AnchorPoint = Vector2.new(0.5, 0.5)
+    bar.Size = UDim2.fromOffset(17, 38)
+    bar.Position = UDim2.fromScale(.5,.5)
+    bar.BackgroundColor3 = Color3.fromRGB(65,65,65)
+    bar.BackgroundTransparency = 1
     bar.ZIndex = 2
-    bar.Parent = self.Gui
+    bar.Parent = self.Holder
 
     Instance.new("UICorner", bar).CornerRadius = UDim.new(0, 8)
+
+    local content = Instance.new("Frame")
+    content.Name = "Content"
+    content.Size = UDim2.new(1, -40, 1, 0) -- leave room for arrows
+    content.Position = UDim2.new(0.5, 0, 0.5, 0)
+    content.AnchorPoint = Vector2.new(0.5, 0.5)
+    content.BackgroundTransparency = 1
+    content.ZIndex = 3
+    content.Parent = bar
 
     local layout = Instance.new("UIListLayout")
     layout.FillDirection = Enum.FillDirection.Horizontal
     layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
     layout.VerticalAlignment = Enum.VerticalAlignment.Center
-    layout.Padding = UDim.new(0, 8)
-    layout.Parent = bar
+    layout.Padding = UDim.new(0, 6)
+    layout.Parent = content
 
     self.Bar = bar
-    self:_makeDraggable(self.Bar)
+    self.BarContent = content
 end
 
 --Sliding Panel
@@ -78,7 +97,7 @@ function Vero_UI:_createPanel()
     panel.AnchorPoint = Vector2.new(0.5, 0)
     panel.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
     panel.ClipsDescendants = true
-    panel.Parent = self.Gui
+    panel.Parent = self.Holder
 
     Instance.new("UICorner", panel).CornerRadius = UDim.new(0, 8)
 
@@ -93,44 +112,82 @@ function Vero_UI:_playIntro()
     --Left Arrow
     local arrowLeft = Instance.new("ImageLabel")
     arrowLeft.Name = "ArrowLeft"
-    arrowLeft.Size = UDim2.new(0, 65, 0, 45)
-    arrowLeft.Position = UDim2.new(.483,0,.3,0)
+    arrowLeft.Size = UDim2.fromOffset(65, 45)
+    arrowLeft.AnchorPoint = Vector2.new(.1, 0.5)
+    arrowLeft.Position = UDim2.new(0, -18, 0.5, 0)
     arrowLeft.Image = "rbxassetid://16848361091"
     arrowLeft.Rotation = 90
     arrowLeft.BackgroundTransparency = 1
+    arrowLeft.ImageTransparency = 1
+    arrowLeft.ZIndex = 5
     arrowLeft.ImageColor3 = Color3.fromRGB(45, 45, 45)
     arrowLeft.BorderSizePixel = 0
-    arrowLeft.Parent = self.Gui
+    arrowLeft.Parent = bar
 
     --Right Arrow
     local arrowRight = Instance.new("ImageLabel")
     arrowRight.Name = "ArrowRight"
-    arrowRight.Size = UDim2.new(0, 65, 0, 45)
-    arrowRight.Position = UDim2.new(.483,0,.3,0)
+    arrowRight.Size = UDim2.fromOffset(65, 45)
+    arrowRight.AnchorPoint = Vector2.new(.9, 0.5)
+    arrowRight.Position = UDim2.new(1, 18, 0.5, 0)
     arrowRight.Image = "rbxassetid://16848361091"
     arrowRight.Rotation = -90
     arrowRight.BackgroundTransparency = 1
+    arrowRight.ImageTransparency = 1
+    arrowRight.ZIndex = 5
     arrowRight.ImageColor3 = Color3.fromRGB(45, 45, 45)
     arrowRight.BorderSizePixel = 0
-    arrowRight.Parent = self.Gui
+    arrowRight.Parent = bar
 
     --Title
     local title = Instance.new("TextLabel")
     title.Name = "Title"
-    title.Position = UDim2.new(.446, 0, .287, 0)
-    title.Size = UDim2.new(0, 82, 0, 67)
+    title.Size = UDim2.fromOffset(82, 67)
+    title.Position = UDim2.fromOffset(-8, -4)
     title.BackgroundTransparency = 1
+    title.TextTransparency = 1
     title.BorderSizePixel = 0
     title.Text = "VER"
-    title.TextScaled = true
+    title.TextSize = 55
+    title.TextWrap = true
     title.TextColor3 = Color3.fromRGB(243, 243, 243)
     title.FontFace = Font.new("", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
-    title.Parent = self.Gui
+    title.Parent = self.Holder
 
     --UI Stroke
-    local Stroke = Instance.new("UIStroke")
-    Stroke.Transparency = .5
-    Stroke.Parent = title
+    local stroke = Instance.new("UIStroke")
+    stroke.Transparency = 1
+    stroke.Parent = title
+
+    --ANIMATE
+    task.delay(1, function()
+
+        --Fade in
+        local info = TweenInfo.new(0.4, Enum.EasingStyle.Sine)
+        tween:Create(arrowLeft, info, {ImageTransparency = 0}):Play()
+        tween:Create(arrowRight, info, {ImageTransparency = 0}):Play()
+        tween:Create(title, info, {TextTransparency = 0}):Play()
+        tween:Create(bar, info, {BackgroundTransparency = 0}):Play()
+        tween:Create(stroke, info, {Transparency = .5}):Play()
+
+        --Text Slide
+        task.wait(2)
+        tween:Create(title, TweenInfo.new(.6, Enum.EasingStyle.Sine), {Size = UDim2.fromOffset(0, 67), Position = UDim2.fromOffset(95, -4)}):Play()
+        tween:Create(title, TweenInfo.new(.8, Enum.EasingStyle.Sine), {TextTransparency = 1}):Play()
+        
+        --Open bar
+        task.wait(1)
+        local barExpand_SizeX = 0
+        local arrowExpand = 0
+        for i, tab in pairs(self.Tabs) do
+            barExpand_SizeX += 90
+            self.Holder.Size = UDim2.fromScale((self.Holder.Size.X.Scale+.03),.06)
+            task.delay(.2, function()
+                tween:Create(tab.Button, info, {BackgroundTransparency = 0, TextTransparency = 0}):Play()
+            end)
+        end
+        tween:Create(bar, info, {Size = UDim2.fromOffset(barExpand_SizeX, 38)}):Play()
+    end)
 end
 
 ------------------------------------------------
@@ -154,10 +211,11 @@ function Vero_UI:tab(tabName)
     btn.TextColor3 = Color3.new(1, 1, 1)
     btn.AutoButtonColor = false
     btn.ZIndex = 3
-    btn.Parent = self.Bar
+    btn.BackgroundTransparency = 1
+    btn.TextTransparency = 1
+    btn.Parent = self.BarContent
 
-    self.Bar.Size += UDim2.fromOffset(90, 0)
-    self.Panel.Size += UDim2.fromOffset(90, 0)
+    --self.Panel.Size += UDim2.fromOffset(90, 0)
 
     Instance.new("UICorner", btn).CornerRadius = UDim.new(0, 6)
 
@@ -239,16 +297,6 @@ function Vero_UI:_makeDraggable(frame)
                 framePos.Y.Offset + delta.Y
             )
             frame.Position = newPos
-
-            if self.Panel then
-                -- panel follows bar with fixed offset
-                self.Panel.Position = UDim2.new(
-                    newPos.X.Scale,
-                    newPos.X.Offset,
-                    newPos.Y.Scale,
-                    newPos.Y.Offset + self.PanelOffsetY
-                )
-            end
         end
     end)
 end
