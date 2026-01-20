@@ -269,6 +269,7 @@ function Vero_UI:tab(tabName)
     local layout = Instance.new("UIListLayout")
     layout.Padding = UDim.new(0, 8)
     layout.HorizontalAlignment = Enum.HorizontalAlignment.Center
+    layout.SortOrder = Enum.SortOrder.LayoutOrder
     layout.Parent = scroll
 
    -- store in Tabs table for toggling
