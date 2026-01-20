@@ -2,11 +2,11 @@
 
 --[[
     TODO:
-    -Add a pop-up Element for confirmation (or to be used when needing to give info before a script is executed)
     -Add on to gamebox element (when clicked opens a blank page, by overlaying the panel, with a back button to go back)
     -Fix dropdown text color + dropdown textscale
     -Fix keybind not disconnecting when removing gui (repeated keybind presses even after destroyed)
     -Name each elements frame inside its constructor (so that it shows inside the page instead of "Frame")
+    -Add hover effects for all the buttons (toggles, buttons, tabs, etc)
 ]]
 
 --//SERVICES
@@ -892,6 +892,240 @@ end
 
 -----------------
 
+--//SearchBar
+function tabFunc:search(placeholder)
+    placeholder = placeholder or "Search..."
+
+    local container = Instance.new("Frame")
+    container.Size = UDim2.new(1, -10, 0, 34)
+    container.BackgroundColor3 = Color3.fromRGB(40,40,40)
+    container.Name = "SearchBar"
+    container.Parent = self.Scroll
+
+    Instance.new("UICorner", container).CornerRadius = UDim.new(0, 6)
+
+    local box = Instance.new("TextBox")
+    box.Size = UDim2.new(1, -20, 1, 0)
+    box.Position = UDim2.new(0, 10, 0, 0)
+    box.BackgroundTransparency = 1
+    box.PlaceholderText = placeholder
+    box.Text = ""
+    box.ClearTextOnFocus = false
+    box.TextColor3 = Color3.fromRGB(230, 230, 230)
+    box.PlaceholderColor3 = Color3.fromRGB(140, 140, 140)
+    box.TextSize = 12
+    box.Font = Enum.Font.Gotham
+    box.TextXAlignment = Enum.TextXAlignment.Left
+    box.Parent = container
+
+    -- Cache elements that can be filtered
+    local elements = {}
+
+    task.defer(function()
+        for _, child in ipairs(self.Scroll:GetChildren()) do
+            if child:IsA("Frame")
+                and child ~= container
+                and child.Name ~= "SearchBar" then
+                table.insert(elements, child)
+            end
+        end
+    end)
+
+    local function matches(frame, query)
+        query = query:lower()
+
+        for _, obj in ipairs(frame:GetDescendants()) do
+            if obj:IsA("TextLabel") or obj:IsA("TextButton") then
+                if tostring(obj.Text):lower():find(query, 1, true) then
+                    return true
+                end
+            end
+        end
+
+        return false
+    end
+
+    box:GetPropertyChangedSignal("Text"):Connect(function()
+        local text = box.Text:lower()
+
+        for _, frame in ipairs(elements) do
+            local show = (text == "") or matches(frame, text)
+            frame.Visible = show
+        end
+
+        -- Resize canvas after filtering
+        task.wait()
+        local layout = self.Scroll:FindFirstChildWhichIsA("UIListLayout")
+        if layout then
+            local total = 0
+            for _, v in ipairs(self.Scroll:GetChildren()) do
+                if v:IsA("Frame") and v.Visible then
+                    total += v.Size.Y.Offset + layout.Padding.Offset
+                end
+            end
+            self.Scroll.CanvasSize = UDim2.new(0, 0, 0, total)
+        end
+    end)
+end
+
+------------------------------------------------
+
+--//VERO FUNCTIONS\\--
+
+--//Confirm/Deny Pop-up
+function Vero_UI:confirm(Title, Desc, config)
+    config = config or {}
+
+    local title = Title or "Confirm"
+    local desc = Desc or ""
+    local showDecline = config.ShowDecline or false
+
+    local onConfirm = config.confirm
+    local onDecline = config.decline
+
+    -- Overlay
+    local overlay = Instance.new("Frame")
+    overlay.Size = UDim2.fromScale(1, 1)
+    overlay.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+    overlay.BackgroundTransparency = 1
+    overlay.ZIndex = 100
+    overlay.Parent = self.Gui
+
+    -- Modal box
+    local modal = Instance.new("Frame")
+    modal.Size = UDim2.fromOffset(300, 160)
+    modal.Position = UDim2.fromScale(0.5, 0.5)
+    modal.AnchorPoint = Vector2.new(0.5, 0.5)
+    modal.BackgroundColor3 = Color3.fromRGB(25, 25, 25)
+    modal.BorderSizePixel = 0
+    modal.ZIndex = 101
+    modal.Parent = overlay
+
+    -- Corner
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 8)
+    corner.Parent = modal
+
+    -- Title
+    local titleLabel = Instance.new("TextLabel")
+    titleLabel.Text = title
+    titleLabel.Font = Enum.Font.GothamBold
+    titleLabel.TextSize = 18
+    titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+    titleLabel.BackgroundTransparency = 1
+    titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+    titleLabel.Size = UDim2.new(1, -20, 0, 30)
+    titleLabel.Position = UDim2.fromOffset(10, 10)
+    titleLabel.ZIndex = 102
+    titleLabel.TextWrapped = true
+    titleLabel.Parent = modal
+
+    -- Description
+    local descLabel = Instance.new("TextLabel")
+    descLabel.Text = desc
+    descLabel.Font = Enum.Font.Gotham
+    descLabel.TextWrapped = true
+    descLabel.TextSize = 14
+    descLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+    descLabel.BackgroundTransparency = 1
+    descLabel.TextXAlignment = Enum.TextXAlignment.Left
+    descLabel.TextYAlignment = Enum.TextYAlignment.Top
+    descLabel.Size = UDim2.new(1, -20, 0, 60)
+    descLabel.Position = UDim2.fromOffset(10, 45)
+    descLabel.ZIndex = 102
+    descLabel.TextWrapped = true
+    descLabel.Parent = modal
+
+    -- Buttons container
+    local buttons = Instance.new("Frame")
+    buttons.Size = UDim2.new(1, -20, 0, 40)
+    buttons.Position = UDim2.new(0, 10, 1, -50)
+    buttons.BackgroundTransparency = 1
+    buttons.ZIndex = 102
+    buttons.Parent = modal
+
+    -- Accept button
+    local accept = Instance.new("ImageButton")
+    accept.Size = UDim2.fromOffset(40, 40)
+    accept.AnchorPoint = Vector2.new(0.5, 0.5)
+    accept.Position = showDecline
+        and UDim2.new(0.75, 0, 0.5, 0)
+        or UDim2.new(0.5, 0, 0.5, 0)
+
+    accept.Image = "rbxassetid://73965231027852"
+    accept.BackgroundTransparency = 1
+    accept.ZIndex = 103
+    accept.Parent = buttons
+
+    -- Decline button (optional)
+    local decline
+    if showDecline then
+        decline = Instance.new("ImageButton")
+        decline.Size = UDim2.fromOffset(40, 40)
+        decline.AnchorPoint = Vector2.new(0.5, 0.5)
+        decline.Position = UDim2.new(0.25, 0, 0.5, 0)
+        decline.Image = "rbxassetid://91091662291716"
+        decline.BackgroundTransparency = 1
+        decline.ZIndex = 103
+        decline.Parent = buttons
+    end
+
+    tween:Create(modal, TweenInfo.new(0.25, Enum.EasingStyle.Back), {
+        Size = UDim2.fromOffset(320, 180)
+    }):Play()
+
+    -- Close function
+    local function close()
+        local waitTime = .25
+        local info = TweenInfo.new(waitTime)
+
+        tween:Create(overlay, info, {
+            BackgroundTransparency = 1
+        }):Play()
+
+        tween:Create(modal, info, {
+            Size = UDim2.fromOffset(0, 0)
+        }):Play()
+
+        tween:Create(titleLabel, info, {
+            TextTransparency = 1
+        }):Play()
+
+        tween:Create(descLabel, info, {
+            TextTransparency = 1
+        }):Play()
+
+        tween:Create(accept, TweenInfo.new(.05), {
+            ImageTransparency = 1
+        }):Play()
+
+        if showDecline then
+            tween:Create(decline,TweenInfo.new(.05), {
+                ImageTransparency = 1
+            }):Play()
+        end
+
+        task.delay(waitTime, function()
+            overlay:Destroy()
+        end)
+    end
+
+    -- Button callbacks
+    accept.MouseButton1Click:Connect(function()
+        if onConfirm then onConfirm() end
+        close()
+    end)
+
+    if decline then
+        decline.MouseButton1Click:Connect(function()
+            if onDecline then onDecline() end
+            close()
+        end)
+    end
+end
+
+-----------------
+
 --//Notification
 function Vero_UI:notify(text, nType, duration)
     nType = nType or "info"
@@ -959,7 +1193,6 @@ function Vero_UI:notify(text, nType, duration)
         end
     end)
 end
-
 
 ------------------------------------------------
 
