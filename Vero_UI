@@ -2,7 +2,6 @@
 
 --[[
     TODO:
-    -Fix keybind not disconnecting when removing gui (repeated keybind presses even after destroyed)
     -Name each elements frame inside its constructor (so that it shows inside the page instead of "Frame")
     -Add hover effects for all the buttons (toggles, buttons, tabs, etc)
     -Fix Element layout (should be based on when added in script)
@@ -551,6 +550,12 @@ function tabFunc:keybind(text, defaultKey, callback)
                     callback()
                 end
             end
+        end
+    end)
+
+    self.Scroll.Destroying:Connect(function()
+        if inputConnection then
+            inputConnection:Disconnect()
         end
     end)
 
