@@ -5,3 +5,6 @@ loadstring(game:HttpGet("https://raw.githubusercontent.com/hm5650/Brick/refs/hea
 
 --//Dark Dex
 loadstring(game:HttpGet("https://rawscripts.net/raw/Universal-Script-NDex-V1-Dark-Dex-76941"))()
+
+--//Auto dodge (ultra instinct)
+loadstring(game:HttpGet("https://pastebin.com/raw/nZgdakkk"))()
