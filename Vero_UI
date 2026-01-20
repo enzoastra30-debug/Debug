@@ -5,7 +5,7 @@
     -Add a search bar Element
     -Add a pop-up Element for confirmation (or to be used when needing to give info before a script is executed)
     -Add on to gamebox element (when clicked opens a blank page, by overlaying the panel, with a back button to go back)
-    -Fix dropdown text color
+    -Fix dropdown text color + dropdown textscale
     -Fix keybind not disconnecting when removing gui (repeated keybind presses even after destroyed)
 ]]
 
