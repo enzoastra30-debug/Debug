@@ -32,13 +32,34 @@ tab1:slider("slider test", 0, 10, 0, function(value)
 end)
 
 --//Dropdown Test
-tab1:dropdown("Dropdown Test", {"test1","test2","test3"},_, function(value)
+tab1:dropdown("Dropdown Test", {"error","success","info", "warning"},_, function(value)
     print((value))
+    if value == "error" then
+        UI:notify(value, "error", 2)
+    end
+    if value == "success" then
+        UI:notify(value, "success", 2)
+    end
+    if value == "info" then
+        UI:notify(value, "info", 2)
+    end
+    if value == "warning" then
+        UI:notify(value, "warning", 2)
+    end
 end)
 
 --//Gamebox Test
-tab1:gamebox("14875978126", "Total Roblox Drama", function()
-    print(("Load Game"))
+local gameBoxTest = tab2:gamebox("14875978126", "Total Roblox Drama")
+local testFrame = Instance.new("TextButton")
+testFrame.Size = UDim2.new(1, 0, 0, 30)
+testFrame.Text = "Total Drama"
+testFrame.Parent = gameBoxTest
+testFrame.MouseButton1Click:Connect(function()
+    UI:confirm("Confirmation Test", "This is obviously a confirmation test", {
+        ShowDecline = true,
+        confirm = function() UI:notify("Confirmed", "", 2) end,
+        decline = function() UI:notify("Declined", "", 2) end,
+    })
 end)
 
 --//Sectionbox Test
@@ -47,4 +68,15 @@ local testFrame = Instance.new("TextButton")
 testFrame.Size = UDim2.new(1, 0, 0, 30)
 testFrame.Text = "Speed Boost"
 testFrame.Parent = section.Content
+testFrame.MouseButton1Click:Connect(function()
+    UI:confirm("Confirmation Test", "This is obviously a confirmation test", {
+        ShowDecline = true,
+        confirm = function() UI:notify("Confirmed", "", 2) end,
+        decline = function() UI:notify("Declined", "", 2) end,
+    })
+end)
+
+
+--//Searchbar test
+tab2:search("Find feature...")
 ````
