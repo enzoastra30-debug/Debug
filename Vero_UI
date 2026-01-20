@@ -2,7 +2,6 @@
 
 --[[
     TODO:
-    -Add on to gamebox element (when clicked opens a blank page, by overlaying the panel, with a back button to go back)
     -Fix dropdown text color + dropdown textscale
     -Fix keybind not disconnecting when removing gui (repeated keybind presses even after destroyed)
     -Name each elements frame inside its constructor (so that it shows inside the page instead of "Frame")
