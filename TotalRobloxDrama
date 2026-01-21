@@ -1,4 +1,3 @@
-local test = function()
+return function()
    print("test")
 end
-return test
