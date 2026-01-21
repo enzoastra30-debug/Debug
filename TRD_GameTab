@@ -1,1 +1,3 @@
-test
+return function()
+  print("test")
+end
