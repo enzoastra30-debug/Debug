@@ -1,16 +1,81 @@
 return function(game_Tab, UI)
-  print("working")
-  --//Gamebox Test
-  local gameBoxTest = game_Tab:gamebox("14875978126", "Total Roblox Drama")
-  local testFrame = Instance.new("TextButton")
-  testFrame.Size = UDim2.new(1, 0, 0, 30)
-  testFrame.Text = "Total Drama"
-  testFrame.Parent = gameBoxTest
-  testFrame.MouseButton1Click:Connect(function()
-      UI:confirm("Confirmation Test", "This is obviously a confirmation test", {
-          ShowDecline = true,
-          confirm = function() UI:notify("Confirmed", "", 2) end,
-          decline = function() UI:notify("Declined", "", 2) end,
-      })
+  --//Main GameBox Holder
+  local gamebox = game_Tab:gamebox("14875978126", "Total Roblox Drama")
+  if game.PlaceId ~= 4939362930 then
+      gamebox:textlabel("You are not on Total Roblox Drama: CAMP!")
+      return
+  end
+  
+  ----------------
+  
+  --//Search Bar
+  gamebox:search("Search for whatever")
+  
+  ----------------
+  
+  --//Section for voting
+  local votingSection = gamebox:section("Voting", 150)
+  
+  local totalCount = Instance.new("ScrollingFrame")
+  totalCount.Name = "Total_Vote_Count"
+  totalCount.Size = UDim2.fromScale(.5,1)
+  totalCount.ScrollBarThickness = 6
+  totalCount.BackgroundColor3 = Color3.fromRGB(25,25,25)
+  totalCount.BorderColor3 = Color3.fromRGB(186,186,186)
+  totalCount.Parent = votingSection.Content
+  
+  local voters = Instance.new("ScrollingFrame")
+  voters.Name = "Active_Voters"
+  voters.Size = UDim2.fromScale(.5,1)
+  voters.ScrollBarThickness = 6
+  voters.Position = UDim2.fromScale(.5,0)
+  voters.BackgroundColor3 = Color3.fromRGB(25,25,25)
+  voters.BorderColor3 = Color3.fromRGB(186,186,186)
+  voters.Parent = votingSection.Content
+  
+  local voter_listlayout1 = Instance.new("UIListLayout")
+  local voter_listlayout2 = Instance.new("UIListLayout")
+  voter_listlayout1.HorizontalAlignment = Enum.HorizontalAlignment.Center
+  voter_listlayout1.VerticalAlignment = Enum.VerticalAlignment.Top
+  voter_listlayout1.FillDirection = Enum.FillDirection.Horizontal
+  voter_listlayout1.Wraps = true
+  voter_listlayout1.Parent = totalCount
+  voter_listlayout2.HorizontalAlignment = Enum.HorizontalAlignment.Center
+  voter_listlayout2.VerticalAlignment = Enum.VerticalAlignment.Top
+  voter_listlayout2.FillDirection = Enum.FillDirection.Horizontal
+  voter_listlayout2.Wraps = true
+  voter_listlayout2.Parent = voters
+  
+  local season = game:GetService("ReplicatedStorage").Season
+  local mainVotingFold = season.Voting
+  local votingPlayerFold = mainVotingFold.Players
+  local votesFold = mainVotingFold.Votes
+  
+  local votingEnded = false
+  votingPlayerFold.ChildAdded:Connect(function(player)
+  
+      --child is added while playerfold was zero refresh (meaning voting just started)
+      if votingEnded then
+          votingEnded = false
+          if #totalCount:GetChildren() > 0 then
+              for _, counted in pairs(totalCount:GetChildren()) do
+                  if not counted:IsA("UIListLayout") then
+                      counted:Destroy()
+                  end
+              end
+          end
+      end
+  
+      local countedFrame = Instance.new("TextLabel")
+      countedFrame.BackgroundTransparency = 1
+      countedFrame.Size = UDim2.fromScale(.3,.2)
+      countedFrame.TextColor3 = Color3.fromRGB(186,186,186)
+      countedFrame.TextScaled = true
+      countedFrame.Text = player.Value.. ": 0"
+      countedFrame.Parent = totalCount
+  end)
+  
+  votingPlayerFold.ChildRemoved:Connect(function()
+      votingEnded = true
   end)
 end
