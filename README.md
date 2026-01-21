@@ -11,6 +11,9 @@ local tab1 = UI:tab("tab1")
 local tab2 = UI:tab("tab2")
 local tab3 = UI:tab("tab3")
 
+--//Searchbar test
+tab1:search("Find feature...")
+
 --//Checkbox test
 tab1:checkbox("Enable feature", false, function(state)
     print("Checkbox is now:", state)
@@ -76,7 +79,6 @@ testFrame.MouseButton1Click:Connect(function()
     })
 end)
 
-
---//Searchbar test
-tab2:search("Find feature...")
+--//TextLabel test
+tab1:textlabel("This is a test Label")
 ````
