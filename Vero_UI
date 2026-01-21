@@ -739,7 +739,7 @@ function tabFunc:dropdown(text, options, default, callback)
                 total += v.Size.Y.Offset + 8
             end
         end
-        self.Scroll.CanvasSize = UDim2.new(0, 0, 0, total)
+        self.Scroll.CanvasSize = UDim2.new(0, 0, 0, (total*1.5))
     end
 
     for _, option in ipairs(options) do
@@ -1028,6 +1028,44 @@ function tabFunc:search(placeholder)
             self.Scroll.CanvasSize = UDim2.new(0, 0, 0, total)
         end
     end)
+end
+
+-----------------
+
+--//TextLabel
+function tabFunc:textlabel(text, callback)
+    local label = Instance.new("TextLabel")
+    label.Size = UDim2.new(1, -10, 0, 24)
+    label.BackgroundColor3 = Color3.fromRGB(40,40,40)
+    label.BorderSizePixel = 0
+    label.TextWrapped = true
+    label.TextXAlignment = Enum.TextXAlignment.Center
+    label.TextYAlignment = Enum.TextYAlignment.Center
+    label.Font = Enum.Font.Gotham
+    label.TextSize = 14
+    label.TextColor3 = Color3.fromRGB(220, 220, 220)
+    label.Text = text or ""
+
+    -- Auto height
+    local constraint = Instance.new("UITextSizeConstraint")
+    constraint.MaxTextSize = 14
+    constraint.Parent = label
+
+    -- Let it resize based on text
+    task.defer(function()
+        local bounds = label.TextBounds
+        label.Size = UDim2.new(1, -10, 0, math.max(24, bounds.Y + 6))
+    end)
+
+    -- Callback hook
+    if callback then
+        callback(label)
+    end
+
+    -- Parent LAST to preserve order
+    label.Parent = self.Scroll
+
+    return label
 end
 
 ------------------------------------------------
