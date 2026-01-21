@@ -835,6 +835,7 @@ function tabFunc:gamebox(imageId, title)
     local page = Instance.new("ScrollingFrame")
     page.Size = UDim2.fromScale(1, 1)
     page.BackgroundTransparency = 1
+    page.ScrollBarThickness = 8
     page.Visible = false
     page.Name = title
     page.Parent = gamePageFold -- main panel container
