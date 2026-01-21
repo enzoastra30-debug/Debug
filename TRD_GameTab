@@ -1,4 +1,5 @@
 return function(game_Tab, UI)
+  print("working")
   --//Gamebox Test
   local gameBoxTest = game_Tab:gamebox("14875978126", "Total Roblox Drama")
   local testFrame = Instance.new("TextButton")
