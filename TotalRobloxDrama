@@ -1,5 +1,3 @@
-#Total Roblox Drama
-
 return function(gameTab, UI)
   print("hi")
 end
