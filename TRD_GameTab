@@ -1,3 +1,3 @@
-return function()
-  print("test")
+return function(test)
+  print(test)
 end
