@@ -941,11 +941,6 @@ function tabFunc:section(title, height)
     Content.Size = UDim2.new(1, -16, 1, -36)
     Content.Parent = Section
 
-    -- Layout (optional, but VERY useful)
-    local layout = Instance.new("UIListLayout")
-    layout.Padding = UDim.new(0, 6)
-    layout.Parent = Content
-
     -- Return an object, not just the frame
     return {
         Frame = Section,
