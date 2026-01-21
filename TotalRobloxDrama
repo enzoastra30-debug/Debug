@@ -1,3 +1,4 @@
-function(gameTab, UI)
+local test = function(gameTab, UI)
    print("test")
 end
+return test
