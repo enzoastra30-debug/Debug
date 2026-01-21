@@ -126,7 +126,7 @@ function Vero_UI:_createNotifications()
     local layout = Instance.new("UIListLayout")
     layout.Padding = UDim.new(0, 8)
     layout.HorizontalAlignment = Enum.HorizontalAlignment.Right
-    layout.VerticalAlignment = Enum.VerticalAlignment.Top
+    layout.VerticalAlignment = Enum.VerticalAlignment.Bottom
     layout.Parent = container
 
     self.Notifications = container
