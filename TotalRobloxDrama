@@ -1,4 +1,4 @@
-local test = function(gameTab, UI)
+local test = function()
    print("test")
 end
 return test
