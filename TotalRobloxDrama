@@ -1,5 +1,17 @@
 #Total Roblox Drama
 
-return function(gameTab, ui)
-  
+return function(gameTab, UI)
+  --//Gamebox Test
+  local gameBoxTest = gameTab:gamebox("14875978126", "Total Roblox Drama")
+  local testFrame = Instance.new("TextButton")
+  testFrame.Size = UDim2.new(1, 0, 0, 30)
+  testFrame.Text = "Total Drama"
+  testFrame.Parent = gameBoxTest
+  testFrame.MouseButton1Click:Connect(function()
+      UI:confirm("Confirmation Test", "This is obviously a confirmation test", {
+          ShowDecline = true,
+          confirm = function() UI:notify("Confirmed", "", 2) end,
+          decline = function() UI:notify("Declined", "", 2) end,
+      })
+  end)
 end
