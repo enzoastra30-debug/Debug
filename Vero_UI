@@ -893,7 +893,11 @@ function tabFunc:gamebox(imageId, title)
         self.Scroll.CanvasSize = UDim2.new(0, 0, 0, totalHeight)
     end
 
-    return page
+    -- create a gamebox instance that reuses tab methods
+    local gameBoxInstance = setmetatable({}, tabFunc)
+    gameBoxInstance.Scroll = page
+    
+    return gameBoxInstance
 end
 
 -----------------
