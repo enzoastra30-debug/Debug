@@ -1,0 +1,20 @@
+local Vero_UI = loadstring(game:HttpGet("https://raw.githubusercontent.com/enzoastra30-debug/Debug/refs/heads/main/Vero_UI"))()
+
+local UI = Vero_UI.window({
+    Title = "My UI",
+})
+
+local player_Tab = UI:tab("Player")
+local game_Tab = UI:tab("Game")
+local tools_Tab = UI:tab("Tools")
+local settings_Tab = UI:tab("Settings")
+
+--------------------------------------------
+
+--//GAME TAB\\--
+
+--Search bar
+game_Tab:search("Search for Games...")
+
+--Load Total Roblox Drama
+loadstring(game:HttpGet("https://raw.githubusercontent.com/enzoastra30-debug/Debug/refs/heads/main/TRD_GameTab"))()(game_Tab, UI)
